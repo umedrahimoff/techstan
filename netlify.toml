@@ -8,7 +8,6 @@
 # Netlify Functions для запуска бота
 [functions]
   directory = "netlify/functions"
-  node_bundler = "esbuild"
 
 # Redirects для SPA
 [[redirects]]
