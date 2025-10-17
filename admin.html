@@ -590,7 +590,10 @@
                                     <button class="btn btn-primary" id="start-parser">
                                         <i class="fas fa-play"></i> Простой парсинг
                                     </button>
-                                    <button class="btn btn-success" id="start-real-parser">
+                                    <button class="btn btn-success" id="start-smart-parser">
+                                        <i class="fas fa-brain"></i> Умный парсинг
+                                    </button>
+                                    <button class="btn btn-info" id="start-real-parser">
                                         <i class="fas fa-search"></i> Реальный парсинг
                                     </button>
                                     <button class="btn btn-secondary" id="check-status">
@@ -1041,6 +1044,33 @@
             } catch (error) {
                 console.error('Error starting parser:', error);
                 alert('Ошибка при запуске простого парсера');
+                hideLoading();
+            }
+        });
+        
+        // Start smart parser manually
+        document.getElementById('start-smart-parser').addEventListener('click', async function() {
+            try {
+                showLoading('Запуск умного парсера...');
+                
+                const response = await fetch('/.netlify/functions/smart-parser', {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(`Умный парсер завершен! Найдено новостей: ${result.total_news}, Успешных источников: ${result.sources_successful}/${result.sources_parsed}`);
+                    loadDashboard();
+                    loadModeration();
+                } else {
+                    alert('Ошибка при запуске умного парсера');
+                }
+                
+                hideLoading();
+            } catch (error) {
+                console.error('Error starting smart parser:', error);
+                alert('Ошибка при запуске умного парсера');
                 hideLoading();
             }
         });
