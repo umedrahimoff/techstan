@@ -789,6 +789,9 @@
         
         // Initialize admin panel
         document.addEventListener('DOMContentLoaded', function() {
+            // Инициализируем Bootstrap tabs
+            initializeTabs();
+            
             // Загружаем данные с таймаутом
             setTimeout(() => {
                 loadDashboard();
@@ -797,6 +800,77 @@
                 loadSettings();
             }, 500);
         });
+        
+        // Инициализация табов
+        function initializeTabs() {
+            // Добавляем обработчики для навигации
+            const navLinks = document.querySelectorAll('.nav-link[data-toggle="tab"]');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Убираем активный класс со всех ссылок
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Добавляем активный класс к текущей ссылке
+                    this.classList.add('active');
+                    
+                    // Скрываем все табы
+                    const allTabs = document.querySelectorAll('.tab-pane');
+                    allTabs.forEach(tab => {
+                        tab.classList.remove('show', 'active');
+                    });
+                    
+                    // Показываем нужный таб
+                    const targetTab = document.querySelector(this.getAttribute('href'));
+                    if (targetTab) {
+                        targetTab.classList.add('show', 'active');
+                    }
+                    
+                    // Обновляем заголовок
+                    updateContentTitle(this.textContent.trim());
+                });
+            });
+        }
+        
+        // Обновление заголовка контента
+        function updateContentTitle(title) {
+            const contentTitle = document.querySelector('.content-title');
+            if (contentTitle) {
+                contentTitle.textContent = title;
+            }
+        }
+        
+        // Функция для программного переключения табов
+        function switchTab(tabId) {
+            // Убираем активный класс со всех ссылок
+            const navLinks = document.querySelectorAll('.nav-link[data-toggle="tab"]');
+            navLinks.forEach(l => l.classList.remove('active'));
+            
+            // Добавляем активный класс к нужной ссылке
+            const targetLink = document.querySelector(`.nav-link[href="#${tabId}"]`);
+            if (targetLink) {
+                targetLink.classList.add('active');
+            }
+            
+            // Скрываем все табы
+            const allTabs = document.querySelectorAll('.tab-pane');
+            allTabs.forEach(tab => {
+                tab.classList.remove('show', 'active');
+            });
+            
+            // Показываем нужный таб
+            const targetTab = document.querySelector(`#${tabId}`);
+            if (targetTab) {
+                targetTab.classList.add('show', 'active');
+            }
+            
+            // Обновляем заголовок
+            if (targetLink) {
+                updateContentTitle(targetLink.textContent.trim());
+            }
+        }
 
         // Load dashboard data
         async function loadDashboard() {
@@ -1036,6 +1110,8 @@
                     alert(`Простой парсер завершен! Найдено новостей: ${result.new_news_count}`);
                     loadDashboard();
                     loadModeration();
+                    // Переключаемся на модерацию после парсинга
+                    switchTab('moderation');
                 } else {
                     alert('Ошибка при запуске простого парсера');
                 }
@@ -1063,6 +1139,8 @@
                     alert(`Умный парсер завершен! Найдено новостей: ${result.total_news}, Успешных источников: ${result.sources_successful}/${result.sources_parsed}`);
                     loadDashboard();
                     loadModeration();
+                    // Переключаемся на модерацию после парсинга
+                    switchTab('moderation');
                 } else {
                     alert('Ошибка при запуске умного парсера');
                 }
@@ -1090,6 +1168,8 @@
                     alert(`Реальный парсер завершен! Найдено новостей: ${result.new_news_count}`);
                     loadDashboard();
                     loadModeration();
+                    // Переключаемся на модерацию после парсинга
+                    switchTab('moderation');
                 } else {
                     alert('Ошибка при запуске реального парсера');
                 }
@@ -1116,6 +1196,8 @@
                     loadModeration();
                     loadAllNews();
                     loadDashboard();
+                    // Переключаемся на все новости после одобрения
+                    switchTab('news');
                 } else {
                     alert('Ошибка при одобрении новости');
                 }
@@ -1139,6 +1221,8 @@
                     loadModeration();
                     loadAllNews();
                     loadDashboard();
+                    // Переключаемся на все новости после отклонения
+                    switchTab('news');
                 } else {
                     alert('Ошибка при отклонении новости');
                 }
