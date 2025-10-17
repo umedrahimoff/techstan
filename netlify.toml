@@ -1,10 +1,15 @@
 [build]
-  command = "pip install -r requirements.txt && python run.py"
+  command = "pip install -r requirements.txt"
   publish = "."
 
 [build.environment]
   PYTHON_VERSION = "3.9"
 
+# Netlify Functions для запуска бота
+[functions]
+  directory = "netlify/functions"
+
+# Redirects для SPA
 [[redirects]]
   from = "/*"
   to = "/index.html"
