@@ -5,8 +5,8 @@ load_dotenv()
 
 # Telegram Bot Configuration
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-MODERATION_GROUP_ID = int(os.getenv("MODERATION_GROUP_ID", "-4877957523"))
-CHANNEL_ID = os.getenv("CHANNEL_ID", "@techstannews")
+MODERATION_GROUP_ID = int(os.getenv("MODERATION_GROUP_ID", "-1000000000000"))  # Placeholder
+CHANNEL_ID = os.getenv("CHANNEL_ID", "@your_channel_here")  # Placeholder
 
 # Проверяем наличие обязательных переменных
 if not BOT_TOKEN:

@@ -1,7 +1,0 @@
-# Telegram Bot Configuration
-BOT_TOKEN=8439861011:AAFGHb2RionJTnAGINhCtBxoqVu7fk8rZ3g
-MODERATION_GROUP_ID=-4877957523
-CHANNEL_ID=@techstannews
-
-# Check interval in minutes
-CHECK_INTERVAL=30
