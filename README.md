@@ -46,13 +46,16 @@ cd news
 pip install -r requirements.txt
 ```
 
-3. Настройте конфигурацию в файле `.env`:
-```env
-BOT_TOKEN=your_bot_token
-MODERATION_GROUP_ID=your_group_id
-CHANNEL_ID=@your_channel
-CHECK_INTERVAL=30
+3. Настройте конфигурацию (опционально):
+```bash
+# Для локальной разработки скопируйте пример
+cp .env.example .env
+
+# Отредактируйте .env файл своими данными
+nano .env
 ```
+
+**Для деплоя:** Токены уже настроены в `config.py` с fallback значениями.
 
 4. Запустите бота:
 ```bash
