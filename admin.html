@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStan Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            border-radius: 10px;
+            margin: 5px 0;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+        }
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .news-item {
+            border-left: 4px solid #007bff;
+            transition: all 0.3s;
+        }
+        .news-item:hover {
+            border-left-color: #28a745;
+            background: #f8f9fa;
+        }
+        .status-badge {
+            font-size: 0.8em;
+        }
+        .btn-action {
+            margin: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar p-3">
+                <div class="text-center mb-4">
+                    <h4 class="text-white">
+                        <i class="bi bi-robot"></i> TechStan Admin
+                    </h4>
+                </div>
+                <nav class="nav flex-column">
+                    <a class="nav-link active" href="#dashboard" data-bs-toggle="tab">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                    <a class="nav-link" href="#parser" data-bs-toggle="tab">
+                        <i class="bi bi-search"></i> Парсер
+                    </a>
+                    <a class="nav-link" href="#moderation" data-bs-toggle="tab">
+                        <i class="bi bi-shield-check"></i> Модерация
+                    </a>
+                    <a class="nav-link" href="#news" data-bs-toggle="tab">
+                        <i class="bi bi-newspaper"></i> Все новости
+                    </a>
+                    <a class="nav-link" href="#settings" data-bs-toggle="tab">
+                        <i class="bi bi-gear"></i> Настройки
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <div class="tab-content">
+                    <!-- Dashboard -->
+                    <div class="tab-pane fade show active" id="dashboard">
+                        <h2 class="mb-4">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </h2>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="bi bi-newspaper text-primary fs-1"></i>
+                                        <h5 class="card-title">Всего новостей</h5>
+                                        <h3 class="text-primary" id="total-news">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="bi bi-clock text-warning fs-1"></i>
+                                        <h5 class="card-title">На модерации</h5>
+                                        <h3 class="text-warning" id="pending-news">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="bi bi-check-circle text-success fs-1"></i>
+                                        <h5 class="card-title">Опубликовано</h5>
+                                        <h3 class="text-success" id="published-news">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <i class="bi bi-x-circle text-danger fs-1"></i>
+                                        <h5 class="card-title">Отклонено</h5>
+                                        <h3 class="text-danger" id="rejected-news">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="bi bi-activity"></i> Статус бота</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span>Статус:</span>
+                                            <span class="badge bg-success" id="bot-status">Активен</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-2">
+                                            <span>Последняя проверка:</span>
+                                            <span id="last-check">-</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-2">
+                                            <span>Интервал проверки:</span>
+                                            <span id="check-interval">30 минут</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="bi bi-graph-up"></i> Статистика за сегодня</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Спарсено:</span>
+                                            <span id="today-parsed">-</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Опубликовано:</span>
+                                            <span id="today-published">-</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Отклонено:</span>
+                                            <span id="today-rejected">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parser -->
+                    <div class="tab-pane fade" id="parser">
+                        <h2 class="mb-4">
+                            <i class="bi bi-search"></i> Парсер новостей
+                        </h2>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5>Ручной запуск парсера</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>Запустите парсинг новостей вручную со всех источников.</p>
+                                <button class="btn btn-primary" id="start-parser">
+                                    <i class="bi bi-play-circle"></i> Запустить парсинг
+                                </button>
+                                <button class="btn btn-secondary ms-2" id="check-status">
+                                    <i class="bi bi-info-circle"></i> Проверить статус
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Источники новостей</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="source-digital" checked>
+                                            <label class="form-check-label" for="source-digital">
+                                                Digital Business
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="source-spot" checked>
+                                            <label class="form-check-label" for="source-spot">
+                                                Spot.uz
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="source-tech" checked>
+                                            <label class="form-check-label" for="source-tech">
+                                                The Tech
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="source-bluescreen" checked>
+                                            <label class="form-check-label" for="source-bluescreen">
+                                                Blue Screen
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Moderation -->
+                    <div class="tab-pane fade" id="moderation">
+                        <h2 class="mb-4">
+                            <i class="bi bi-shield-check"></i> Модерация новостей
+                        </h2>
+                        
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5>Новости на модерации</h5>
+                                <span class="badge bg-warning" id="moderation-count">0</span>
+                            </div>
+                            <div class="card-body">
+                                <div id="moderation-list">
+                                    <div class="text-center text-muted">
+                                        <i class="bi bi-hourglass-split fs-1"></i>
+                                        <p>Загрузка новостей...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- All News -->
+                    <div class="tab-pane fade" id="news">
+                        <h2 class="mb-4">
+                            <i class="bi bi-newspaper"></i> Все новости
+                        </h2>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h5>Архив новостей</h5>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="btn-group" role="group">
+                                            <input type="radio" class="btn-check" name="news-filter" id="filter-all" checked>
+                                            <label class="btn btn-outline-primary" for="filter-all">Все</label>
+                                            
+                                            <input type="radio" class="btn-check" name="news-filter" id="filter-published">
+                                            <label class="btn btn-outline-success" for="filter-published">Опубликованные</label>
+                                            
+                                            <input type="radio" class="btn-check" name="news-filter" id="filter-rejected">
+                                            <label class="btn btn-outline-danger" for="filter-rejected">Отклоненные</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div id="news-list">
+                                    <div class="text-center text-muted">
+                                        <i class="bi bi-newspaper fs-1"></i>
+                                        <p>Загрузка новостей...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings -->
+                    <div class="tab-pane fade" id="settings">
+                        <h2 class="mb-4">
+                            <i class="bi bi-gear"></i> Настройки
+                        </h2>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Настройки бота</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="check-interval" class="form-label">Интервал проверки (минуты)</label>
+                                            <input type="number" class="form-control" id="check-interval-input" value="30" min="5" max="1440">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="moderation-group" class="form-label">ID группы модерации</label>
+                                            <input type="text" class="form-control" id="moderation-group" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="channel-id" class="form-label">ID канала</label>
+                                            <input type="text" class="form-control" id="channel-id" readonly>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="bot-token" class="form-label">Токен бота</label>
+                                            <input type="password" class="form-control" id="bot-token" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" id="save-settings">
+                                    <i class="bi bi-save"></i> Сохранить настройки
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2" id="loading-text">Загрузка...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let allNews = [];
+        let pendingNews = [];
+        let statistics = {};
+
+        // Initialize admin panel
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboard();
+            loadModeration();
+            loadAllNews();
+            loadSettings();
+        });
+
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                showLoading('Загрузка статистики...');
+                
+                // Load statistics
+                const statsResponse = await fetch('/.netlify/functions/get-stats');
+                if (statsResponse.ok) {
+                    statistics = await statsResponse.json();
+                    updateDashboard();
+                }
+                
+                hideLoading();
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                hideLoading();
+            }
+        }
+
+        // Update dashboard with data
+        function updateDashboard() {
+            document.getElementById('total-news').textContent = statistics.total_parsed || 0;
+            document.getElementById('pending-news').textContent = statistics.pending_count || 0;
+            document.getElementById('published-news').textContent = statistics.published_count || 0;
+            document.getElementById('rejected-news').textContent = statistics.rejected_count || 0;
+            
+            document.getElementById('today-parsed').textContent = statistics.parsed_today || 0;
+            document.getElementById('today-published').textContent = statistics.published_today || 0;
+            document.getElementById('today-rejected').textContent = statistics.rejected_today || 0;
+        }
+
+        // Load moderation news
+        async function loadModeration() {
+            try {
+                const response = await fetch('/.netlify/functions/get-pending-news');
+                if (response.ok) {
+                    pendingNews = await response.json();
+                    displayModerationNews();
+                }
+            } catch (error) {
+                console.error('Error loading moderation news:', error);
+            }
+        }
+
+        // Display moderation news
+        function displayModerationNews() {
+            const container = document.getElementById('moderation-list');
+            const count = document.getElementById('moderation-count');
+            
+            count.textContent = pendingNews.length;
+            
+            if (pendingNews.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="bi bi-check-circle fs-1"></i>
+                        <p>Нет новостей на модерации</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = pendingNews.map(news => `
+                <div class="news-item p-3 mb-3 border rounded">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-2">${news.title}</h6>
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-link-45deg"></i> 
+                                <a href="${news.link}" target="_blank" class="text-decoration-none">${news.link}</a>
+                            </p>
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-secondary me-2">${news.source}</span>
+                                <small class="text-muted">
+                                    <i class="bi bi-clock"></i> ${new Date(news.timestamp).toLocaleString('ru-RU')}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="btn-group-vertical">
+                            <button class="btn btn-success btn-sm btn-action" onclick="approveNews(${news.id})">
+                                <i class="bi bi-check"></i> Одобрить
+                            </button>
+                            <button class="btn btn-danger btn-sm btn-action" onclick="rejectNews(${news.id})">
+                                <i class="bi bi-x"></i> Отклонить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load all news
+        async function loadAllNews() {
+            try {
+                const response = await fetch('/.netlify/functions/get-all-news');
+                if (response.ok) {
+                    allNews = await response.json();
+                    displayAllNews();
+                }
+            } catch (error) {
+                console.error('Error loading all news:', error);
+            }
+        }
+
+        // Display all news
+        function displayAllNews(filter = 'all') {
+            const container = document.getElementById('news-list');
+            let filteredNews = allNews;
+            
+            if (filter === 'published') {
+                filteredNews = allNews.filter(news => news.status === 'published');
+            } else if (filter === 'rejected') {
+                filteredNews = allNews.filter(news => news.status === 'rejected');
+            }
+            
+            if (filteredNews.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="bi bi-newspaper fs-1"></i>
+                        <p>Нет новостей</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = filteredNews.map(news => `
+                <div class="news-item p-3 mb-3 border rounded">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-2">${news.title}</h6>
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-link-45deg"></i> 
+                                <a href="${news.link}" target="_blank" class="text-decoration-none">${news.link}</a>
+                            </p>
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-secondary me-2">${news.source}</span>
+                                <span class="badge ${getStatusBadgeClass(news.status)} me-2">${getStatusText(news.status)}</span>
+                                <small class="text-muted">
+                                    <i class="bi bi-clock"></i> ${new Date(news.timestamp).toLocaleString('ru-RU')}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Get status badge class
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case 'published': return 'bg-success';
+                case 'rejected': return 'bg-danger';
+                case 'pending': return 'bg-warning';
+                default: return 'bg-secondary';
+            }
+        }
+
+        // Get status text
+        function getStatusText(status) {
+            switch(status) {
+                case 'published': return 'Опубликовано';
+                case 'rejected': return 'Отклонено';
+                case 'pending': return 'На модерации';
+                default: return 'Неизвестно';
+            }
+        }
+
+        // Load settings
+        async function loadSettings() {
+            try {
+                const response = await fetch('/.netlify/functions/get-settings');
+                if (response.ok) {
+                    const settings = await response.json();
+                    document.getElementById('check-interval-input').value = settings.check_interval || 30;
+                    document.getElementById('moderation-group').value = settings.moderation_group_id || '';
+                    document.getElementById('channel-id').value = settings.channel_id || '';
+                    document.getElementById('bot-token').value = settings.bot_token ? '***' : '';
+                }
+            } catch (error) {
+                console.error('Error loading settings:', error);
+            }
+        }
+
+        // Start parser manually
+        document.getElementById('start-parser').addEventListener('click', async function() {
+            try {
+                showLoading('Запуск парсера...');
+                
+                const response = await fetch('/.netlify/functions/start-parser', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(`Парсер запущен! Найдено новых новостей: ${result.new_news_count}`);
+                    loadDashboard();
+                    loadModeration();
+                } else {
+                    alert('Ошибка при запуске парсера');
+                }
+                
+                hideLoading();
+            } catch (error) {
+                console.error('Error starting parser:', error);
+                alert('Ошибка при запуске парсера');
+                hideLoading();
+            }
+        });
+
+        // Approve news
+        async function approveNews(newsId) {
+            try {
+                const response = await fetch('/.netlify/functions/approve-news', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ newsId })
+                });
+                
+                if (response.ok) {
+                    alert('Новость одобрена!');
+                    loadModeration();
+                    loadAllNews();
+                    loadDashboard();
+                } else {
+                    alert('Ошибка при одобрении новости');
+                }
+            } catch (error) {
+                console.error('Error approving news:', error);
+                alert('Ошибка при одобрении новости');
+            }
+        }
+
+        // Reject news
+        async function rejectNews(newsId) {
+            try {
+                const response = await fetch('/.netlify/functions/reject-news', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ newsId })
+                });
+                
+                if (response.ok) {
+                    alert('Новость отклонена!');
+                    loadModeration();
+                    loadAllNews();
+                    loadDashboard();
+                } else {
+                    alert('Ошибка при отклонении новости');
+                }
+            } catch (error) {
+                console.error('Error rejecting news:', error);
+                alert('Ошибка при отклонении новости');
+            }
+        }
+
+        // Filter news
+        document.querySelectorAll('input[name="news-filter"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const filter = this.id.replace('filter-', '');
+                displayAllNews(filter);
+            });
+        });
+
+        // Save settings
+        document.getElementById('save-settings').addEventListener('click', async function() {
+            try {
+                const settings = {
+                    check_interval: parseInt(document.getElementById('check-interval-input').value)
+                };
+                
+                const response = await fetch('/.netlify/functions/save-settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(settings)
+                });
+                
+                if (response.ok) {
+                    alert('Настройки сохранены!');
+                } else {
+                    alert('Ошибка при сохранении настроек');
+                }
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                alert('Ошибка при сохранении настроек');
+            }
+        });
+
+        // Show loading modal
+        function showLoading(text = 'Загрузка...') {
+            document.getElementById('loading-text').textContent = text;
+            new bootstrap.Modal(document.getElementById('loadingModal')).show();
+        }
+
+        // Hide loading modal
+        function hideLoading() {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('loadingModal'));
+            if (modal) {
+                modal.hide();
+            }
+        }
+    </script>
+</body>
+</html>
