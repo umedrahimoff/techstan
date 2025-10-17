@@ -8,165 +8,432 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
     <style>
+        :root {
+            --primary-color: #1976d2;
+            --primary-dark: #1565c0;
+            --secondary-color: #424242;
+            --accent-color: #ff4081;
+            --background-color: #fafafa;
+            --surface-color: #ffffff;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --divider-color: #e0e0e0;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Roboto', sans-serif;
-            background: #f5f5f5;
+            background: var(--background-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
         }
         
         .sidebar {
-            min-height: 100vh;
-            background: #2c3e50;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            width: 280px;
+            background: var(--surface-color);
+            border-right: 1px solid var(--divider-color);
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
         }
         
-        .sidebar .nav-link {
-            color: #ecf0f1;
-            padding: 12px 20px;
-            border-radius: 0;
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
+        .sidebar-header {
+            padding: 24px 16px;
+            border-bottom: 1px solid var(--divider-color);
+            background: var(--surface-color);
         }
         
-        .sidebar .nav-link:hover {
-            background: #34495e;
-            color: white;
-            border-left-color: #3498db;
+        .sidebar-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
         }
         
-        .sidebar .nav-link.active {
-            background: #3498db;
-            color: white;
-            border-left-color: #2980b9;
+        .sidebar-title i {
+            margin-right: 12px;
+            color: var(--primary-color);
+        }
+        
+        .sidebar-nav {
+            padding: 8px 0;
+        }
+        
+        .nav-item {
+            margin: 4px 8px;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-weight: 400;
+        }
+        
+        .nav-link:hover {
+            background: rgba(25, 118, 210, 0.08);
+            color: var(--primary-color);
+        }
+        
+        .nav-link.active {
+            background: rgba(25, 118, 210, 0.12);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .nav-link i {
+            margin-right: 16px;
+            width: 20px;
+            text-align: center;
         }
         
         .main-content {
-            background: #f5f5f5;
+            flex: 1;
+            margin-left: 280px;
+            background: var(--background-color);
             min-height: 100vh;
         }
         
-        .card {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+        .content-header {
+            background: var(--surface-color);
+            border-bottom: 1px solid var(--divider-color);
+            padding: 24px 32px;
+            display: flex;
+            justify-content: between;
+            align-items: center;
         }
         
-        .card:hover {
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        }
-        
-        .card-header {
-            background: white;
-            border-bottom: 1px solid #e9ecef;
-            border-radius: 8px 8px 0 0 !important;
-            font-weight: 500;
-        }
-        
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 10px;
-        }
-        
-        .stats-card .card-body {
-            padding: 20px;
-        }
-        
-        .stats-number {
-            font-size: 2.5rem;
-            font-weight: 700;
+        .content-title {
+            font-size: 24px;
+            font-weight: 400;
+            color: var(--text-primary);
             margin: 0;
         }
         
-        .news-item {
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-            background: white;
+        .content-body {
+            padding: 32px;
         }
         
-        .news-item:hover {
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
+        .card {
+            background: var(--surface-color);
+            border: 1px solid var(--divider-color);
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        
+        .card-header {
+            background: var(--surface-color);
+            border-bottom: 1px solid var(--divider-color);
+            padding: 16px 24px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .card-body {
+            padding: 24px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: var(--surface-color);
+            border: 1px solid var(--divider-color);
+            border-radius: 4px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: 300;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 4px;
         }
         
         .btn {
-            border-radius: 6px;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
             font-weight: 500;
-            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .btn:hover {
-            transform: translateY(-1px);
+        .btn i {
+            margin-right: 8px;
         }
         
         .btn-primary {
-            background: #3498db;
-            border-color: #3498db;
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
         }
         
         .btn-success {
-            background: #27ae60;
-            border-color: #27ae60;
+            background: var(--success-color);
+            color: white;
         }
         
         .btn-danger {
-            background: #e74c3c;
-            border-color: #e74c3c;
+            background: var(--error-color);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--text-secondary);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .news-item {
+            background: var(--surface-color);
+            border: 1px solid var(--divider-color);
+            border-radius: 4px;
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
+        }
+        
+        .news-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .news-title {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .news-meta {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .news-actions {
+            display: flex;
+            gap: 8px;
         }
         
         .badge {
-            font-size: 0.8em;
-            padding: 6px 10px;
-            border-radius: 4px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
         }
         
-        .navbar {
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            border-radius: 0;
+        .badge-success {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success-color);
+        }
+        
+        .badge-warning {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .badge-danger {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--error-color);
+        }
+        
+        .badge-info {
+            background: rgba(25, 118, 210, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .form-control {
+            border: 1px solid var(--divider-color);
+            border-radius: 4px;
+            padding: 12px 16px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            background: var(--surface-color);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+            outline: none;
         }
         
         .table {
-            background: white;
-            border-radius: 8px;
+            background: var(--surface-color);
+            border-radius: 4px;
             overflow: hidden;
         }
         
         .table thead th {
-            background: #f8f9fa;
+            background: var(--background-color);
             border: none;
             font-weight: 500;
-            color: #495057;
+            color: var(--text-primary);
+            padding: 16px;
         }
         
-        .form-control {
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            transition: all 0.3s ease;
+        .table tbody td {
+            border: none;
+            padding: 16px;
+            border-bottom: 1px solid var(--divider-color);
         }
         
-        .form-control:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loading-content {
+            background: var(--surface-color);
+            padding: 32px;
+            border-radius: 4px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--divider-color);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .logout-btn {
             position: absolute;
-            top: 15px;
-            right: 20px;
-            background: #e74c3c;
+            top: 24px;
+            right: 32px;
+            background: var(--error-color);
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 8px 16px;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 14px;
+            cursor: pointer;
         }
         
         .logout-btn:hover {
-            background: #c0392b;
-            color: white;
+            background: #d32f2f;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .text-muted {
+            color: var(--text-secondary);
+        }
+        
+        .text-success {
+            color: var(--success-color);
+        }
+        
+        .text-warning {
+            color: var(--warning-color);
+        }
+        
+        .text-danger {
+            color: var(--error-color);
+        }
+        
+        .text-primary {
+            color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .content-body {
+                padding: 16px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -178,87 +445,90 @@
         }
     </script>
     
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 sidebar p-0">
-                <div class="text-center p-3" style="background: #34495e;">
-                    <h5 class="text-white mb-0">
-                        <i class="fas fa-robot"></i> TechStan Admin
-                    </h5>
-                </div>
-                <nav class="nav flex-column">
-                    <a class="nav-link active" href="#dashboard" data-toggle="tab">
-                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                    </a>
-                    <a class="nav-link" href="#parser" data-toggle="tab">
-                        <i class="fas fa-search"></i> Парсер
-                    </a>
-                    <a class="nav-link" href="#moderation" data-toggle="tab">
-                        <i class="fas fa-shield-alt"></i> Модерация
-                    </a>
-                    <a class="nav-link" href="#news" data-toggle="tab">
-                        <i class="fas fa-newspaper"></i> Все новости
-                    </a>
-                    <a class="nav-link" href="#settings" data-toggle="tab">
-                        <i class="fas fa-cog"></i> Настройки
-                    </a>
-                </nav>
-                <div class="p-3">
-                    <button class="btn btn-danger btn-sm logout-btn" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i> Выйти
-                    </button>
-                </div>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">
+                    <i class="fas fa-robot"></i>
+                    TechStan Admin
+                </h1>
             </div>
+            <nav class="sidebar-nav">
+                <div class="nav-item">
+                    <a class="nav-link active" href="#dashboard" data-toggle="tab">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="#parser" data-toggle="tab">
+                        <i class="fas fa-search"></i>
+                        Парсер
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="#moderation" data-toggle="tab">
+                        <i class="fas fa-shield-alt"></i>
+                        Модерация
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="#news" data-toggle="tab">
+                        <i class="fas fa-newspaper"></i>
+                        Все новости
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="#settings" data-toggle="tab">
+                        <i class="fas fa-cog"></i>
+                        Настройки
+                    </a>
+                </div>
+            </nav>
+        </div>
 
-            <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 main-content p-4">
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-header">
+                <h1 class="content-title">Dashboard</h1>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Выйти
+                </button>
+            </div>
+            
+            <div class="content-body">
                 <div class="tab-content">
                     <!-- Dashboard -->
                     <div class="tab-pane fade show active" id="dashboard">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h2 class="mb-0">
-                                <i class="fas fa-tachometer-alt"></i> Dashboard
-                            </h2>
-                            <small class="text-muted">Последнее обновление: <span id="last-update">-</span></small>
-                        </div>
-                        
-                        <div class="row mb-4">
-                            <div class="col-md-3 mb-3">
-                                <div class="card stats-card">
-                                    <div class="card-body text-center">
-                                        <i class="fas fa-newspaper fa-2x mb-2"></i>
-                                        <h6 class="card-title">Всего новостей</h6>
-                                        <h3 class="stats-number" id="total-news">-</h3>
-                                    </div>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon text-primary">
+                                    <i class="fas fa-newspaper"></i>
                                 </div>
+                                <h2 class="stat-number" id="total-news">-</h2>
+                                <div class="stat-label">Всего новостей</div>
                             </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="card">
-                                    <div class="card-body text-center">
-                                        <i class="fas fa-clock fa-2x text-warning mb-2"></i>
-                                        <h6 class="card-title">На модерации</h6>
-                                        <h3 class="text-warning" id="pending-news">-</h3>
-                                    </div>
+                            <div class="stat-card">
+                                <div class="stat-icon text-warning">
+                                    <i class="fas fa-clock"></i>
                                 </div>
+                                <h2 class="stat-number text-warning" id="pending-news">-</h2>
+                                <div class="stat-label">На модерации</div>
                             </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="card">
-                                    <div class="card-body text-center">
-                                        <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
-                                        <h6 class="card-title">Опубликовано</h6>
-                                        <h3 class="text-success" id="published-news">-</h3>
-                                    </div>
+                            <div class="stat-card">
+                                <div class="stat-icon text-success">
+                                    <i class="fas fa-check-circle"></i>
                                 </div>
+                                <h2 class="stat-number text-success" id="published-news">-</h2>
+                                <div class="stat-label">Опубликовано</div>
                             </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="card">
-                                    <div class="card-body text-center">
-                                        <i class="fas fa-times-circle fa-2x text-danger mb-2"></i>
-                                        <h6 class="card-title">Отклонено</h6>
-                                        <h3 class="text-danger" id="rejected-news">-</h3>
-                                    </div>
+                            <div class="stat-card">
+                                <div class="stat-icon text-danger">
+                                    <i class="fas fa-times-circle"></i>
                                 </div>
+                                <h2 class="stat-number text-danger" id="rejected-news">-</h2>
+                                <div class="stat-label">Отклонено</div>
                             </div>
                         </div>
 
@@ -310,27 +580,23 @@
 
                     <!-- Parser -->
                     <div class="tab-pane fade" id="parser">
-                        <h2 class="mb-4">
-                            <i class="bi bi-search"></i> Парсер новостей
-                        </h2>
-                        
-                        <div class="card mb-4">
+                        <div class="card">
                             <div class="card-header">
-                                <h5>Ручной запуск парсера</h5>
+                                <h5>Парсер новостей</h5>
                             </div>
                             <div class="card-body">
                                 <p>Запустите парсинг новостей вручную со всех источников.</p>
-                                <div class="btn-group mb-3" role="group">
+                                <div class="btn-group">
                                     <button class="btn btn-primary" id="start-parser">
                                         <i class="fas fa-play"></i> Простой парсинг
                                     </button>
                                     <button class="btn btn-success" id="start-real-parser">
                                         <i class="fas fa-search"></i> Реальный парсинг
                                     </button>
+                                    <button class="btn btn-secondary" id="check-status">
+                                        <i class="fas fa-info-circle"></i> Статус
+                                    </button>
                                 </div>
-                                <button class="btn btn-secondary" id="check-status">
-                                    <i class="fas fa-info-circle"></i> Проверить статус
-                                </button>
                             </div>
                         </div>
 
@@ -375,21 +641,14 @@
 
                     <!-- Moderation -->
                     <div class="tab-pane fade" id="moderation">
-                        <h2 class="mb-4">
-                            <i class="bi bi-shield-check"></i> Модерация новостей
-                        </h2>
-                        
                         <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5>Новости на модерации</h5>
-                                <span class="badge bg-warning" id="moderation-count">0</span>
+                            <div class="card-header">
+                                <h5>Модерация новостей</h5>
+                                <span class="badge badge-warning" id="moderation-count">0</span>
                             </div>
                             <div class="card-body">
                                 <div id="moderation-list">
-                                    <div class="text-center text-muted">
-                                        <i class="bi bi-hourglass-split fs-1"></i>
-                                        <p>Загрузка новостей...</p>
-                                    </div>
+                                    <p class="text-muted">Загрузка новостей...</p>
                                 </div>
                             </div>
                         </div>
@@ -397,9 +656,6 @@
 
                     <!-- All News -->
                     <div class="tab-pane fade" id="news">
-                        <h2 class="mb-4">
-                            <i class="bi bi-newspaper"></i> Все новости
-                        </h2>
                         
                         <div class="card">
                             <div class="card-header">
@@ -434,9 +690,6 @@
 
                     <!-- Settings -->
                     <div class="tab-pane fade" id="settings">
-                        <h2 class="mb-4">
-                            <i class="bi bi-gear"></i> Настройки
-                        </h2>
                         
                         <div class="card">
                             <div class="card-header">
@@ -643,7 +896,7 @@
             if (pendingNews.length === 0) {
                 container.innerHTML = `
                     <div class="text-center text-muted">
-                        <i class="bi bi-check-circle fs-1"></i>
+                        <i class="fas fa-check-circle" style="font-size: 48px; margin-bottom: 16px;"></i>
                         <p>Нет новостей на модерации</p>
                     </div>
                 `;
@@ -651,29 +904,20 @@
             }
             
             container.innerHTML = pendingNews.map(news => `
-                <div class="news-item p-3 mb-3 border rounded">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <h6 class="mb-2">${news.title}</h6>
-                            <p class="text-muted mb-2">
-                                <i class="bi bi-link-45deg"></i> 
-                                <a href="${news.link}" target="_blank" class="text-decoration-none">${news.link}</a>
-                            </p>
-                            <div class="d-flex align-items-center">
-                                <span class="badge bg-secondary me-2">${news.source}</span>
-                                <small class="text-muted">
-                                    <i class="bi bi-clock"></i> ${new Date(news.timestamp).toLocaleString('ru-RU')}
-                                </small>
-                            </div>
-                        </div>
-                        <div class="btn-group-vertical">
-                            <button class="btn btn-success btn-sm btn-action" onclick="approveNews(${news.id})">
-                                <i class="bi bi-check"></i> Одобрить
-                            </button>
-                            <button class="btn btn-danger btn-sm btn-action" onclick="rejectNews(${news.id})">
-                                <i class="bi bi-x"></i> Отклонить
-                            </button>
-                        </div>
+                <div class="news-item">
+                    <div class="news-title">${news.title}</div>
+                    <div class="news-meta">
+                        <i class="fas fa-link"></i> <a href="${news.link}" target="_blank">${news.link}</a><br>
+                        <i class="fas fa-building"></i> ${news.source} | 
+                        <i class="fas fa-clock"></i> ${new Date(news.timestamp).toLocaleString('ru-RU')}
+                    </div>
+                    <div class="news-actions">
+                        <button class="btn btn-success" onclick="approveNews(${news.id})">
+                            <i class="fas fa-check"></i> Одобрить
+                        </button>
+                        <button class="btn btn-danger" onclick="rejectNews(${news.id})">
+                            <i class="fas fa-times"></i> Отклонить
+                        </button>
                     </div>
                 </div>
             `).join('');
