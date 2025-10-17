@@ -490,6 +490,9 @@ class TelegramNewsBot:
             application.add_handler(CommandHandler("report", self.report_command))
             application.add_handler(CallbackQueryHandler(self.handle_callback_query))
             
+            # Отправляем уведомление о деплое
+            await self.send_deployment_notification()
+            
             # Запускаем периодическую проверку новостей
             application.job_queue.run_repeating(
                 lambda context: asyncio.create_task(self.check_for_new_news()),
@@ -504,6 +507,41 @@ class TelegramNewsBot:
         except Exception as e:
             logger.error(f"Критическая ошибка при асинхронном запуске бота: {e}")
             raise
+    
+    async def send_deployment_notification(self):
+        """Отправляет уведомление о деплое в группу модерации"""
+        try:
+            from datetime import datetime
+            
+            # Получаем статистику
+            stats = self.load_statistics()
+            pending_news = self.load_pending_news()
+            published_news = self.load_published_news()
+            
+            # Формируем сообщение
+            message = f"🚀 <b>БОТ УСПЕШНО ЗАПУЩЕН!</b>\n\n"
+            message += f"⏰ Время запуска: {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}\n"
+            message += f"🌐 Платформа: Netlify Functions\n"
+            message += f"📊 Статистика:\n"
+            message += f"• На модерации: {len(pending_news)}\n"
+            message += f"• Опубликовано: {len(published_news)}\n"
+            message += f"• Всего спарсено: {stats['total_parsed']}\n"
+            message += f"• Всего опубликовано: {stats['total_published']}\n\n"
+            message += f"✅ Бот готов к работе!\n"
+            message += f"🔄 Проверка новостей каждые {CHECK_INTERVAL} минут\n"
+            message += f"📢 Канал: {CHANNEL_ID}"
+            
+            # Отправляем в группу модерации
+            await self.bot.send_message(
+                chat_id=MODERATION_GROUP_ID,
+                text=message,
+                parse_mode='HTML'
+            )
+            
+            logger.info("Уведомление о деплое отправлено в группу модерации")
+            
+        except Exception as e:
+            logger.error(f"Ошибка при отправке уведомления о деплое: {e}")
 
 if __name__ == "__main__":
     bot = TelegramNewsBot()
