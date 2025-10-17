@@ -1,8 +1,13 @@
 const https = require('https');
+const { checkAuth } = require('./auth-middleware');
 
 exports.handler = async (event, context) => {
   try {
     console.log('🔍 Запуск парсера вручную');
+    
+    // Проверка авторизации
+    const authError = checkAuth(event);
+    if (authError) return authError;
     
     const botToken = process.env.BOT_TOKEN;
     const moderationGroupId = process.env.MODERATION_GROUP_ID;
