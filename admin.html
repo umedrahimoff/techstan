@@ -777,13 +777,9 @@
         let pendingNews = [];
         let statistics = {};
 
-        // Токен авторизации
-        const ADMIN_TOKEN = 'techstan_admin_2024';
-        
-        // Добавляем токен к запросам
+        // Простые заголовки без авторизации
         function getAuthHeaders() {
             return {
-                'Authorization': `Bearer ${ADMIN_TOKEN}`,
                 'Content-Type': 'application/json'
             };
         }

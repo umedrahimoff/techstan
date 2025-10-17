@@ -1,13 +1,8 @@
 const https = require('https');
-const { checkAuth } = require('./auth-middleware');
 
 exports.handler = async (event, context) => {
   try {
     console.log('❌ Отклонение новости');
-    
-    // Проверка авторизации
-    const authError = checkAuth(event);
-    if (authError) return authError;
     
     const { newsId } = JSON.parse(event.body || '{}');
     const botToken = process.env.BOT_TOKEN;
