@@ -532,10 +532,13 @@
         
         // Initialize admin panel
         document.addEventListener('DOMContentLoaded', function() {
-            loadDashboard();
-            loadModeration();
-            loadAllNews();
-            loadSettings();
+            // Загружаем данные с таймаутом
+            setTimeout(() => {
+                loadDashboard();
+                loadModeration();
+                loadAllNews();
+                loadSettings();
+            }, 500);
         });
 
         // Load dashboard data
@@ -543,16 +546,49 @@
             try {
                 showLoading('Загрузка статистики...');
                 
-                // Load statistics
-                const statsResponse = await fetch('/.netlify/functions/get-stats');
+                // Load statistics with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд таймаут
+                
+                const statsResponse = await fetch('/.netlify/functions/get-stats', {
+                    headers: getAuthHeaders(),
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
                 if (statsResponse.ok) {
                     statistics = await statsResponse.json();
+                    updateDashboard();
+                } else {
+                    console.error('Failed to load stats:', statsResponse.status);
+                    // Показываем заглушку если API не работает
+                    statistics = {
+                        total_parsed: 0,
+                        pending_count: 0,
+                        published_count: 0,
+                        rejected_count: 0,
+                        parsed_today: 0,
+                        published_today: 0,
+                        rejected_today: 0
+                    };
                     updateDashboard();
                 }
                 
                 hideLoading();
             } catch (error) {
                 console.error('Error loading dashboard:', error);
+                // Показываем заглушку при ошибке
+                statistics = {
+                    total_parsed: 0,
+                    pending_count: 0,
+                    published_count: 0,
+                    rejected_count: 0,
+                    parsed_today: 0,
+                    published_today: 0,
+                    rejected_today: 0
+                };
+                updateDashboard();
                 hideLoading();
             }
         }
@@ -567,18 +603,28 @@
             document.getElementById('today-parsed').textContent = statistics.parsed_today || 0;
             document.getElementById('today-published').textContent = statistics.published_today || 0;
             document.getElementById('today-rejected').textContent = statistics.rejected_today || 0;
+            
+            // Обновляем время последнего обновления
+            document.getElementById('last-update').textContent = new Date().toLocaleString('ru-RU');
         }
 
         // Load moderation news
         async function loadModeration() {
             try {
-                const response = await fetch('/.netlify/functions/get-pending-news');
+                const response = await fetch('/.netlify/functions/get-pending-news', {
+                    headers: getAuthHeaders()
+                });
                 if (response.ok) {
                     pendingNews = await response.json();
-                    displayModerationNews();
+                } else {
+                    console.error('Failed to load pending news:', response.status);
+                    pendingNews = [];
                 }
+                displayModerationNews();
             } catch (error) {
                 console.error('Error loading moderation news:', error);
+                pendingNews = [];
+                displayModerationNews();
             }
         }
 
@@ -631,13 +677,20 @@
         // Load all news
         async function loadAllNews() {
             try {
-                const response = await fetch('/.netlify/functions/get-all-news');
+                const response = await fetch('/.netlify/functions/get-all-news', {
+                    headers: getAuthHeaders()
+                });
                 if (response.ok) {
                     allNews = await response.json();
-                    displayAllNews();
+                } else {
+                    console.error('Failed to load all news:', response.status);
+                    allNews = [];
                 }
+                displayAllNews();
             } catch (error) {
                 console.error('Error loading all news:', error);
+                allNews = [];
+                displayAllNews();
             }
         }
 
