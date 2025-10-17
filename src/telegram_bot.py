@@ -63,7 +63,10 @@ class TelegramNewsBot:
             except Exception as e:
                 logger.error(f"Ошибка при загрузке published_news: {e}")
                 return []
-        return []
+        else:
+            # Создаем файл если не существует
+            self.save_published_news([])
+            return []
     
     def save_published_news(self, published_news: List[Dict]):
         """Сохраняет список опубликованных новостей"""
@@ -452,24 +455,29 @@ class TelegramNewsBot:
     
     def run(self):
         """Запускает бота"""
-        application = Application.builder().token(BOT_TOKEN).build()
-        
-        # Добавляем обработчики команд
-        application.add_handler(CommandHandler("start", self.start_command))
-        application.add_handler(CommandHandler("status", self.status_command))
-        application.add_handler(CommandHandler("report", self.report_command))
-        application.add_handler(CallbackQueryHandler(self.handle_callback_query))
-        
-        # Запускаем периодическую проверку новостей
-        application.job_queue.run_repeating(
-            lambda context: asyncio.create_task(self.check_for_new_news()),
-            interval=CHECK_INTERVAL * 60,
-            first=10  # Первая проверка через 10 секунд
-        )
-        
-        # Запускаем бота
-        logger.info("Запускаем бота...")
-        application.run_polling()
+        try:
+            application = Application.builder().token(BOT_TOKEN).build()
+            
+            # Добавляем обработчики команд
+            application.add_handler(CommandHandler("start", self.start_command))
+            application.add_handler(CommandHandler("status", self.status_command))
+            application.add_handler(CommandHandler("report", self.report_command))
+            application.add_handler(CallbackQueryHandler(self.handle_callback_query))
+            
+            # Запускаем периодическую проверку новостей
+            application.job_queue.run_repeating(
+                lambda context: asyncio.create_task(self.check_for_new_news()),
+                interval=CHECK_INTERVAL * 60,
+                first=10  # Первая проверка через 10 секунд
+            )
+            
+            # Запускаем бота
+            logger.info("Запускаем бота...")
+            application.run_polling()
+            
+        except Exception as e:
+            logger.error(f"Критическая ошибка при запуске бота: {e}")
+            raise
 
 if __name__ == "__main__":
     bot = TelegramNewsBot()

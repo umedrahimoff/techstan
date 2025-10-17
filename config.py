@@ -4,9 +4,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Telegram Bot Configuration
-BOT_TOKEN = os.getenv("BOT_TOKEN", "8439861011:AAFGHb2RionJTnAGINhCtBxoqVu7fk8rZ3g")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 MODERATION_GROUP_ID = int(os.getenv("MODERATION_GROUP_ID", "-4877957523"))
 CHANNEL_ID = os.getenv("CHANNEL_ID", "@techstannews")
+
+# Проверяем наличие обязательных переменных
+if not BOT_TOKEN:
+    raise ValueError("BOT_TOKEN не найден в переменных окружения. Создайте .env файл или установите переменную окружения.")
 
 # News Sources
 NEWS_SOURCES = [

@@ -1,13 +1,7 @@
-# Секретные данные (для локальной разработки)
+# Environment variables
 .env
-*.env
-
-# Но оставляем .env.example для деплоя
-!.env.example
-
-# Файлы данных
-data/
-logs/
+.env.local
+.env.production
 
 # Python
 __pycache__/
@@ -30,7 +24,6 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
 # Virtual environments
 venv/
@@ -46,14 +39,18 @@ venv.bak/
 *.swo
 *~
 
+# Logs
+logs/
+*.log
+
+# Data files (optional - можно раскомментировать если не хотите коммитить данные)
+# data/
+# *.json
+
 # OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
-# Logs
-*.log
+# Temporary files
+*.tmp
+*.temp
